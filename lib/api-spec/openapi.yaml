@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: campaigns
+    description: Campaign generation and library operations
 paths:
   /healthz:
     get:
@@ -24,7 +26,154 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /campaigns:
+    get:
+      operationId: listCampaigns
+      tags: [campaigns]
+      summary: List saved campaigns
+      responses:
+        "200":
+          description: Saved campaigns
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CampaignSummary"
+    post:
+      operationId: saveCampaign
+      tags: [campaigns]
+      summary: Save a generated campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignInput"
+      responses:
+        "201":
+          description: Saved campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "400":
+          description: Invalid campaign data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /campaigns/summary:
+    get:
+      operationId: getCampaignSummary
+      tags: [campaigns]
+      summary: Get campaign library summary
+      responses:
+        "200":
+          description: Campaign library summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignSummaryStats"
+  /campaigns/generate:
+    post:
+      operationId: generateCampaign
+      tags: [campaigns]
+      summary: Generate a structured campaign strategy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignBrief"
+      responses:
+        "200":
+          description: Generated campaign strategy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignStrategy"
+        "400":
+          description: Invalid campaign brief
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Campaign generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /campaigns/{id}:
+    get:
+      operationId: getCampaign
+      tags: [campaigns]
+      summary: Get a saved campaign
+      parameters:
+        - $ref: "#/components/parameters/CampaignId"
+      responses:
+        "200":
+          description: Saved campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "404":
+          description: Campaign not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateCampaign
+      tags: [campaigns]
+      summary: Update a saved campaign
+      parameters:
+        - $ref: "#/components/parameters/CampaignId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampaignUpdate"
+      responses:
+        "200":
+          description: Updated campaign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "404":
+          description: Campaign not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteCampaign
+      tags: [campaigns]
+      summary: Delete a saved campaign
+      parameters:
+        - $ref: "#/components/parameters/CampaignId"
+      responses:
+        "204":
+          description: Campaign deleted
+        "404":
+          description: Campaign not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
+  parameters:
+    CampaignId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +182,254 @@ components:
           type: string
       required:
         - status
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    CampaignBrief:
+      type: object
+      properties:
+        brandName:
+          type: string
+          minLength: 1
+        industry:
+          type: string
+          minLength: 1
+        product:
+          type: string
+          minLength: 1
+        targetAudience:
+          type: string
+          minLength: 1
+        objective:
+          type: string
+          minLength: 1
+        location:
+          type: string
+          minLength: 1
+        duration:
+          type: string
+          minLength: 1
+        budgetAmount:
+          type: number
+          minimum: 0
+        budgetCurrency:
+          type: string
+          minLength: 1
+        brandPersonality:
+          type: string
+          minLength: 1
+        challenge:
+          type: string
+          minLength: 1
+        additionalInformation:
+          type: string
+      required:
+        - brandName
+        - industry
+        - product
+        - targetAudience
+        - objective
+        - location
+        - duration
+        - budgetAmount
+        - budgetCurrency
+        - brandPersonality
+        - challenge
+    CampaignOverview:
+      type: object
+      properties:
+        campaignName:
+          type: string
+        concept:
+          type: string
+        objective:
+          type: string
+      required: [campaignName, concept, objective]
+    AudienceProfile:
+      type: object
+      properties:
+        primary:
+          type: string
+        secondary:
+          type: string
+        characteristics:
+          type: array
+          items:
+            type: string
+      required: [primary, secondary, characteristics]
+    CreativeDirection:
+      type: object
+      properties:
+        visualDirection:
+          type: string
+        tone:
+          type: string
+        storytelling:
+          type: string
+        suggestedStyle:
+          type: string
+      required: [visualDirection, tone, storytelling, suggestedStyle]
+    ContentIdea:
+      type: object
+      properties:
+        format:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+      required: [format, title, description]
+    TimelinePhase:
+      type: object
+      properties:
+        phase:
+          type: string
+        timing:
+          type: string
+        focus:
+          type: string
+        actions:
+          type: array
+          items:
+            type: string
+      required: [phase, timing, focus, actions]
+    BudgetAllocation:
+      type: object
+      properties:
+        channel:
+          type: string
+        percentage:
+          type: number
+        rationale:
+          type: string
+      required: [channel, percentage, rationale]
+    CampaignStrategy:
+      type: object
+      properties:
+        overview:
+          $ref: "#/components/schemas/CampaignOverview"
+        consumerInsight:
+          type: string
+        targetAudience:
+          $ref: "#/components/schemas/AudienceProfile"
+        positioning:
+          type: string
+        bigIdea:
+          type: string
+        keyMessage:
+          type: string
+        creativeDirection:
+          $ref: "#/components/schemas/CreativeDirection"
+        contentIdeas:
+          type: array
+          items:
+            $ref: "#/components/schemas/ContentIdea"
+        digitalActivation:
+          type: array
+          items:
+            type: string
+        offlineActivation:
+          type: array
+          items:
+            type: string
+        influencerStrategy:
+          type: string
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimelinePhase"
+        budgetAllocation:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetAllocation"
+        kpis:
+          type: array
+          items:
+            type: string
+        strategicRationale:
+          type: string
+      required:
+        - overview
+        - consumerInsight
+        - targetAudience
+        - positioning
+        - bigIdea
+        - keyMessage
+        - creativeDirection
+        - contentIdeas
+        - digitalActivation
+        - offlineActivation
+        - influencerStrategy
+        - timeline
+        - budgetAllocation
+        - kpis
+        - strategicRationale
+    CampaignInput:
+      type: object
+      properties:
+        brief:
+          $ref: "#/components/schemas/CampaignBrief"
+        strategy:
+          $ref: "#/components/schemas/CampaignStrategy"
+      required: [brief, strategy]
+    CampaignUpdate:
+      type: object
+      properties:
+        brief:
+          $ref: "#/components/schemas/CampaignBrief"
+        strategy:
+          $ref: "#/components/schemas/CampaignStrategy"
+      minProperties: 1
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        brief:
+          $ref: "#/components/schemas/CampaignBrief"
+        strategy:
+          $ref: "#/components/schemas/CampaignStrategy"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, brief, strategy, createdAt, updatedAt]
+    CampaignSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        brandName:
+          type: string
+        industry:
+          type: string
+        objective:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, brandName, industry, objective, createdAt, updatedAt]
+    CampaignSummaryStats:
+      type: object
+      properties:
+        totalCampaigns:
+          type: integer
+        thisMonth:
+          type: integer
+        latestCampaign:
+          type: ["string", "null"]
+      required: [totalCampaigns, thisMonth, latestCampaign]
 

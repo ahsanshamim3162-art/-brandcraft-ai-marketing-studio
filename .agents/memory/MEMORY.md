@@ -1,0 +1,1 @@
+- [Generated client TypeScript](generated-client-typescript.md) — generated fetch helpers using Headers.entries() require the DOM iterable library in the client tsconfig.

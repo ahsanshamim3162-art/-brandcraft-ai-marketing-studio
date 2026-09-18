@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "BrandCraft"
+description = "A marketing strategy workspace that turns structured business briefs into practical, professional campaign plans and keeps them organized in a campaign library."
+version = "1.0.0"
+id = "artifacts/brandcraft-app"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24300
+
+[services.development]
+run = "pnpm --filter @workspace/brandcraft-app run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/brandcraft-app", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/brandcraft-app/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24300"
+BASE_PATH = "/"
