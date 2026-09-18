@@ -10,4 +10,7 @@ export interface ContentIdea {
   format: string;
   title: string;
   description: string;
+  whyRelevant: string;
+  audience: string;
+  strategicLink: string;
 }

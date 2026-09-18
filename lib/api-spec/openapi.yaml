@@ -207,6 +207,19 @@ components:
         objective:
           type: string
           minLength: 1
+        marketingChallenge:
+          type: string
+          enum:
+            - Low brand awareness
+            - Low sales/conversion
+            - Strong competition
+            - New product launch
+            - Low repeat purchase
+            - Need more leads
+            - Need more foot traffic
+            - Weak brand differentiation
+            - Entering a new market
+            - Other
         location:
           type: string
           minLength: 1
@@ -222,9 +235,15 @@ components:
         brandPersonality:
           type: string
           minLength: 1
-        challenge:
+        differentiation:
           type: string
           minLength: 1
+        currentCustomerPerception:
+          type: string
+        challenge:
+          type: string
+        competitorsOrAlternatives:
+          type: string
         additionalInformation:
           type: string
       required:
@@ -233,12 +252,13 @@ components:
         - product
         - targetAudience
         - objective
+        - marketingChallenge
         - location
         - duration
         - budgetAmount
         - budgetCurrency
         - brandPersonality
-        - challenge
+        - differentiation
     CampaignOverview:
       type: object
       properties:
@@ -273,6 +293,38 @@ components:
         suggestedStyle:
           type: string
       required: [visualDirection, tone, storytelling, suggestedStyle]
+    Diagnosis:
+      type: object
+      properties:
+        businessContext:
+          type: string
+        userProvidedFacts:
+          type: array
+          items:
+            type: string
+        marketingProblem:
+          type: string
+        strategicAssumptions:
+          type: array
+          items:
+            type: string
+        recommendedApproach:
+          type: string
+      required: [businessContext, userProvidedFacts, marketingProblem, strategicAssumptions, recommendedApproach]
+    ActivationRecommendation:
+      type: object
+      properties:
+        channel:
+          type: string
+        what:
+          type: string
+        why:
+          type: string
+        audience:
+          type: string
+        strategicLink:
+          type: string
+      required: [channel, what, why, audience, strategicLink]
     ContentIdea:
       type: object
       properties:
@@ -282,7 +334,35 @@ components:
           type: string
         description:
           type: string
-      required: [format, title, description]
+        whyRelevant:
+          type: string
+        audience:
+          type: string
+        strategicLink:
+          type: string
+      required: [format, title, description, whyRelevant, audience, strategicLink]
+    Kpi:
+      type: object
+      properties:
+        metric:
+          type: string
+        why:
+          type: string
+        signal:
+          type: string
+      required: [metric, why, signal]
+    BudgetAllocation:
+      type: object
+      properties:
+        channel:
+          type: string
+        percentage:
+          type: number
+        amount:
+          type: number
+        rationale:
+          type: string
+      required: [channel, percentage, amount, rationale]
     TimelinePhase:
       type: object
       properties:
@@ -297,26 +377,24 @@ components:
           items:
             type: string
       required: [phase, timing, focus, actions]
-    BudgetAllocation:
-      type: object
-      properties:
-        channel:
-          type: string
-        percentage:
-          type: number
-        rationale:
-          type: string
-      required: [channel, percentage, rationale]
     CampaignStrategy:
       type: object
       properties:
+        diagnosis:
+          $ref: "#/components/schemas/Diagnosis"
         overview:
           $ref: "#/components/schemas/CampaignOverview"
+        marketingProblem:
+          type: string
+        audienceTension:
+          type: string
         consumerInsight:
           type: string
         targetAudience:
           $ref: "#/components/schemas/AudienceProfile"
         positioning:
+          type: string
+        strategicDirection:
           type: string
         bigIdea:
           type: string
@@ -331,13 +409,13 @@ components:
         digitalActivation:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/ActivationRecommendation"
         offlineActivation:
           type: array
           items:
-            type: string
-        influencerStrategy:
-          type: string
+            $ref: "#/components/schemas/ActivationRecommendation"
+        creatorStrategy:
+          $ref: "#/components/schemas/ActivationRecommendation"
         timeline:
           type: array
           items:
@@ -349,25 +427,34 @@ components:
         kpis:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/Kpi"
         strategicRationale:
           type: string
+        qualityCheck:
+          type: array
+          items:
+            type: string
       required:
+        - diagnosis
         - overview
+        - marketingProblem
+        - audienceTension
         - consumerInsight
         - targetAudience
         - positioning
+        - strategicDirection
         - bigIdea
         - keyMessage
         - creativeDirection
         - contentIdeas
         - digitalActivation
         - offlineActivation
-        - influencerStrategy
+        - creatorStrategy
         - timeline
         - budgetAllocation
         - kpis
         - strategicRationale
+        - qualityCheck
     CampaignInput:
       type: object
       properties:

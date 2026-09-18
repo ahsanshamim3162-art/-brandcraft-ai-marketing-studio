@@ -1,0 +1,267 @@
+The Campaign Generator is working, but the generated campaign quality is too generic.
+
+Do NOT redesign the homepage.
+Do NOT rebuild the Campaign Generator UI from scratch.
+
+We need to improve the intelligence and generation architecture.
+
+The current problem is that the generated answers sound like generic AI marketing advice instead of a real strategic marketing plan.
+
+Improve the Campaign Generation Engine using this strategic reasoning framework:
+
+BUSINESS CONTEXT
+↓
+MARKETING PROBLEM
+↓
+AUDIENCE TENSION
+↓
+CONSUMER INSIGHT
+↓
+POSITIONING
+↓
+STRATEGIC DIRECTION
+↓
+BIG CAMPAIGN IDEA
+↓
+KEY MESSAGE
+↓
+CREATIVE DIRECTION
+↓
+EXECUTION
+↓
+KPIs
+↓
+QUALITY CHECK
+
+IMPORTANT:
+
+Do not jump directly from user inputs to generic campaign ideas.
+
+The generated campaign must have a logical connection between every section.
+
+For example:
+
+Marketing Problem
+→ explains what needs to be solved.
+
+Audience Tension
+→ explains the relevant customer situation.
+
+Consumer Insight
+→ explains the meaningful human/consumer truth.
+
+Positioning
+→ explains how the brand should compete or be perceived.
+
+Strategic Direction
+→ explains the strategic approach.
+
+Big Campaign Idea
+→ is the central creative expression of that strategy.
+
+Execution
+→ must directly translate the campaign idea into practical activities.
+
+KPIs
+→ must measure the stated campaign objective.
+
+STRICT QUALITY RULES:
+
+Do NOT generate generic statements such as:
+
+"Use social media."
+"Run Facebook ads."
+"Work with influencers."
+"Create engaging content."
+"Post consistently."
+
+Unless the recommendation is specifically relevant to the submitted business and campaign objective, do not include it.
+
+Every recommendation must answer:
+
+WHY is this relevant?
+WHO is it targeting?
+WHAT exactly should the brand do?
+HOW does it connect to the campaign strategy?
+
+Do not invent product features, statistics, customer research, market share, or business facts that the user did not provide.
+
+Clearly distinguish between:
+- User-provided facts
+- Strategic assumptions
+- Recommendations
+
+If information is missing, make a reasonable strategic assumption but label it as an assumption internally and avoid presenting it as a verified fact.
+
+---
+
+IMPROVE THE INPUT FORM
+
+Add these fields if they do not already exist:
+
+1. Main Marketing Challenge
+
+Options:
+- Low brand awareness
+- Low sales/conversion
+- Strong competition
+- New product launch
+- Low repeat purchase
+- Need more leads
+- Need more foot traffic
+- Weak brand differentiation
+- Entering a new market
+- Other
+
+2. What makes this product/brand different?
+
+Free-text field.
+
+3. Current customer perception
+
+Optional free-text field.
+
+4. Competitors or alternatives
+
+Optional free-text field.
+
+These fields should materially influence the generated strategy.
+
+---
+
+IMPROVE THE GENERATION PROCESS
+
+Create a structured internal generation pipeline.
+
+Step 1:
+Analyze the business context.
+
+Step 2:
+Identify the core marketing problem.
+
+Step 3:
+Define the likely audience tension.
+
+Step 4:
+Develop one strong consumer insight.
+
+Step 5:
+Create a positioning direction.
+
+Step 6:
+Develop 2-3 possible campaign territories internally.
+
+Step 7:
+Select the strongest territory based on:
+- relevance
+- differentiation
+- audience fit
+- campaign objective
+- feasibility
+
+Step 8:
+Develop the final Big Campaign Idea.
+
+Step 9:
+Build the execution plan directly from that idea.
+
+Step 10:
+Run a quality check before returning the result.
+
+---
+
+QUALITY CHECK
+
+Before returning the final campaign, verify:
+
+1. Does the campaign solve the stated marketing problem?
+2. Is the target audience clearly defined?
+3. Is the consumer insight specific rather than generic?
+4. Does the Big Idea logically come from the insight?
+5. Are the execution ideas connected to the Big Idea?
+6. Does the strategy fit the stated budget and duration?
+7. Are the recommendations practical?
+8. Did the system avoid inventing unsupported facts?
+9. Are the KPIs connected to the campaign objective?
+10. Does the campaign feel specific to this business rather than reusable for any business?
+
+If the answer fails these checks, regenerate the weak sections internally before displaying the final result.
+
+---
+
+STRUCTURED OUTPUT
+
+Keep the generated result as structured data rather than one large text response.
+
+Use a campaign object with sections such as:
+
+{
+  diagnosis,
+  marketing_problem,
+  audience,
+  audience_tension,
+  consumer_insight,
+  positioning,
+  strategic_direction,
+  big_idea,
+  key_message,
+  creative_direction,
+  content_ideas,
+  digital_activation,
+  offline_activation,
+  creator_strategy,
+  timeline,
+  budget_allocation,
+  kpis,
+  strategic_rationale
+}
+
+Each field should have a clear purpose.
+
+Do not allow the frontend to depend on unstructured paragraphs.
+
+If the project is using mock generation now, improve the mock generation architecture so it follows this same structure and uses the actual user inputs.
+
+Do not connect a paid AI API yet.
+
+The goal is to make the generation architecture AI-ready and significantly more strategic before connecting Gemini/OpenAI.
+
+After implementation, test using this example:
+
+Business:
+Mango Valley
+
+Industry:
+Food & Beverage
+
+Product:
+Premium Mango Juice
+
+Target Audience:
+Gen Z and young adults
+
+Campaign Objective:
+Brand Awareness
+
+Location:
+Bangladesh
+
+Duration:
+30 days
+
+Budget:
+৳50,000
+
+Brand Personality:
+Youthful + nostalgic
+
+Marketing Challenge:
+The category feels crowded and generic.
+
+Differentiation:
+Uses locally sourced mangoes and focuses on authentic mango taste.
+
+Generate the campaign and inspect whether every section logically connects.
+
+Do not stop after changing the prompt.
+Run the application and verify the generated result.

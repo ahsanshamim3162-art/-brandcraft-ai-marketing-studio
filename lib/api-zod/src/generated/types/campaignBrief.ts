@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { CampaignBriefMarketingChallenge } from './campaignBriefMarketingChallenge';
 
 export interface CampaignBrief {
   /** @minLength 1 */
@@ -17,6 +18,7 @@ export interface CampaignBrief {
   targetAudience: string;
   /** @minLength 1 */
   objective: string;
+  marketingChallenge: CampaignBriefMarketingChallenge;
   /** @minLength 1 */
   location: string;
   /** @minLength 1 */
@@ -28,6 +30,9 @@ export interface CampaignBrief {
   /** @minLength 1 */
   brandPersonality: string;
   /** @minLength 1 */
-  challenge: string;
+  differentiation: string;
+  currentCustomerPerception?: string;
+  challenge?: string;
+  competitorsOrAlternatives?: string;
   additionalInformation?: string;
 }

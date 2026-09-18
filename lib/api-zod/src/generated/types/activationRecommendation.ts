@@ -6,9 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface BudgetAllocation {
+export interface ActivationRecommendation {
   channel: string;
-  percentage: number;
-  amount: number;
-  rationale: string;
+  what: string;
+  why: string;
+  audience: string;
+  strategicLink: string;
 }

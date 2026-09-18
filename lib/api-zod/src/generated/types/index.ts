@@ -6,10 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './activationRecommendation';
 export * from './audienceProfile';
 export * from './budgetAllocation';
 export * from './campaign';
 export * from './campaignBrief';
+export * from './campaignBriefMarketingChallenge';
 export * from './campaignInput';
 export * from './campaignOverview';
 export * from './campaignStrategy';
@@ -18,6 +20,8 @@ export * from './campaignSummaryStats';
 export * from './campaignUpdate';
 export * from './contentIdea';
 export * from './creativeDirection';
+export * from './diagnosis';
 export * from './errorResponse';
 export * from './healthStatus';
+export * from './kpi';
 export * from './timelinePhase';

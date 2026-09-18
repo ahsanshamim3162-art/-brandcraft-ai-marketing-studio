@@ -6,9 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface BudgetAllocation {
-  channel: string;
-  percentage: number;
-  amount: number;
-  rationale: string;
+export interface Kpi {
+  metric: string;
+  why: string;
+  signal: string;
 }

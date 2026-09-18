@@ -13,6 +13,22 @@ export interface ErrorResponse {
   error: string;
 }
 
+export type CampaignBriefMarketingChallenge = typeof CampaignBriefMarketingChallenge[keyof typeof CampaignBriefMarketingChallenge];
+
+
+export const CampaignBriefMarketingChallenge = {
+  Low_brand_awareness: 'Low brand awareness',
+  'Low_sales/conversion': 'Low sales/conversion',
+  Strong_competition: 'Strong competition',
+  New_product_launch: 'New product launch',
+  Low_repeat_purchase: 'Low repeat purchase',
+  Need_more_leads: 'Need more leads',
+  Need_more_foot_traffic: 'Need more foot traffic',
+  Weak_brand_differentiation: 'Weak brand differentiation',
+  Entering_a_new_market: 'Entering a new market',
+  Other: 'Other',
+} as const;
+
 export interface CampaignBrief {
   /** @minLength 1 */
   brandName: string;
@@ -24,6 +40,7 @@ export interface CampaignBrief {
   targetAudience: string;
   /** @minLength 1 */
   objective: string;
+  marketingChallenge: CampaignBriefMarketingChallenge;
   /** @minLength 1 */
   location: string;
   /** @minLength 1 */
@@ -35,7 +52,10 @@ export interface CampaignBrief {
   /** @minLength 1 */
   brandPersonality: string;
   /** @minLength 1 */
-  challenge: string;
+  differentiation: string;
+  currentCustomerPerception?: string;
+  challenge?: string;
+  competitorsOrAlternatives?: string;
   additionalInformation?: string;
 }
 
@@ -58,10 +78,42 @@ export interface CreativeDirection {
   suggestedStyle: string;
 }
 
+export interface Diagnosis {
+  businessContext: string;
+  userProvidedFacts: string[];
+  marketingProblem: string;
+  strategicAssumptions: string[];
+  recommendedApproach: string;
+}
+
+export interface ActivationRecommendation {
+  channel: string;
+  what: string;
+  why: string;
+  audience: string;
+  strategicLink: string;
+}
+
 export interface ContentIdea {
   format: string;
   title: string;
   description: string;
+  whyRelevant: string;
+  audience: string;
+  strategicLink: string;
+}
+
+export interface Kpi {
+  metric: string;
+  why: string;
+  signal: string;
+}
+
+export interface BudgetAllocation {
+  channel: string;
+  percentage: number;
+  amount: number;
+  rationale: string;
 }
 
 export interface TimelinePhase {
@@ -71,28 +123,27 @@ export interface TimelinePhase {
   actions: string[];
 }
 
-export interface BudgetAllocation {
-  channel: string;
-  percentage: number;
-  rationale: string;
-}
-
 export interface CampaignStrategy {
+  diagnosis: Diagnosis;
   overview: CampaignOverview;
+  marketingProblem: string;
+  audienceTension: string;
   consumerInsight: string;
   targetAudience: AudienceProfile;
   positioning: string;
+  strategicDirection: string;
   bigIdea: string;
   keyMessage: string;
   creativeDirection: CreativeDirection;
   contentIdeas: ContentIdea[];
-  digitalActivation: string[];
-  offlineActivation: string[];
-  influencerStrategy: string;
+  digitalActivation: ActivationRecommendation[];
+  offlineActivation: ActivationRecommendation[];
+  creatorStrategy: ActivationRecommendation;
   timeline: TimelinePhase[];
   budgetAllocation: BudgetAllocation[];
-  kpis: string[];
+  kpis: Kpi[];
   strategicRationale: string;
+  qualityCheck: string[];
 }
 
 export interface CampaignInput {

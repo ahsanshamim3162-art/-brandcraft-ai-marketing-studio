@@ -56,20 +56,33 @@ export const SaveCampaignBody = zod.object({
   "product": zod.string().min(1),
   "targetAudience": zod.string().min(1),
   "objective": zod.string().min(1),
+  "marketingChallenge": zod.enum(['Low brand awareness', 'Low sales/conversion', 'Strong competition', 'New product launch', 'Low repeat purchase', 'Need more leads', 'Need more foot traffic', 'Weak brand differentiation', 'Entering a new market', 'Other']),
   "location": zod.string().min(1),
   "duration": zod.string().min(1),
   "budgetAmount": zod.number().min(saveCampaignBodyBriefBudgetAmountMin),
   "budgetCurrency": zod.string().min(1),
   "brandPersonality": zod.string().min(1),
-  "challenge": zod.string().min(1),
+  "differentiation": zod.string().min(1),
+  "currentCustomerPerception": zod.string().optional(),
+  "challenge": zod.string().optional(),
+  "competitorsOrAlternatives": zod.string().optional(),
   "additionalInformation": zod.string().optional()
 }),
   "strategy": zod.object({
+  "diagnosis": zod.object({
+  "businessContext": zod.string(),
+  "userProvidedFacts": zod.array(zod.string()),
+  "marketingProblem": zod.string(),
+  "strategicAssumptions": zod.array(zod.string()),
+  "recommendedApproach": zod.string()
+}),
   "overview": zod.object({
   "campaignName": zod.string(),
   "concept": zod.string(),
   "objective": zod.string()
 }),
+  "marketingProblem": zod.string(),
+  "audienceTension": zod.string(),
   "consumerInsight": zod.string(),
   "targetAudience": zod.object({
   "primary": zod.string(),
@@ -77,6 +90,7 @@ export const SaveCampaignBody = zod.object({
   "characteristics": zod.array(zod.string())
 }),
   "positioning": zod.string(),
+  "strategicDirection": zod.string(),
   "bigIdea": zod.string(),
   "keyMessage": zod.string(),
   "creativeDirection": zod.object({
@@ -88,11 +102,32 @@ export const SaveCampaignBody = zod.object({
   "contentIdeas": zod.array(zod.object({
   "format": zod.string(),
   "title": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "whyRelevant": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
 })),
-  "digitalActivation": zod.array(zod.string()),
-  "offlineActivation": zod.array(zod.string()),
-  "influencerStrategy": zod.string(),
+  "digitalActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "offlineActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "creatorStrategy": zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+}),
   "timeline": zod.array(zod.object({
   "phase": zod.string(),
   "timing": zod.string(),
@@ -102,10 +137,16 @@ export const SaveCampaignBody = zod.object({
   "budgetAllocation": zod.array(zod.object({
   "channel": zod.string(),
   "percentage": zod.number(),
+  "amount": zod.number(),
   "rationale": zod.string()
 })),
-  "kpis": zod.array(zod.string()),
-  "strategicRationale": zod.string()
+  "kpis": zod.array(zod.object({
+  "metric": zod.string(),
+  "why": zod.string(),
+  "signal": zod.string()
+})),
+  "strategicRationale": zod.string(),
+  "qualityCheck": zod.array(zod.string())
 })
 })
 
@@ -132,20 +173,33 @@ export const SaveCampaignResponse = zod.object({
   "product": zod.string().min(1),
   "targetAudience": zod.string().min(1),
   "objective": zod.string().min(1),
+  "marketingChallenge": zod.enum(['Low brand awareness', 'Low sales/conversion', 'Strong competition', 'New product launch', 'Low repeat purchase', 'Need more leads', 'Need more foot traffic', 'Weak brand differentiation', 'Entering a new market', 'Other']),
   "location": zod.string().min(1),
   "duration": zod.string().min(1),
   "budgetAmount": zod.number().min(saveCampaignResponseBriefBudgetAmountMin),
   "budgetCurrency": zod.string().min(1),
   "brandPersonality": zod.string().min(1),
-  "challenge": zod.string().min(1),
+  "differentiation": zod.string().min(1),
+  "currentCustomerPerception": zod.string().optional(),
+  "challenge": zod.string().optional(),
+  "competitorsOrAlternatives": zod.string().optional(),
   "additionalInformation": zod.string().optional()
 }),
   "strategy": zod.object({
+  "diagnosis": zod.object({
+  "businessContext": zod.string(),
+  "userProvidedFacts": zod.array(zod.string()),
+  "marketingProblem": zod.string(),
+  "strategicAssumptions": zod.array(zod.string()),
+  "recommendedApproach": zod.string()
+}),
   "overview": zod.object({
   "campaignName": zod.string(),
   "concept": zod.string(),
   "objective": zod.string()
 }),
+  "marketingProblem": zod.string(),
+  "audienceTension": zod.string(),
   "consumerInsight": zod.string(),
   "targetAudience": zod.object({
   "primary": zod.string(),
@@ -153,6 +207,7 @@ export const SaveCampaignResponse = zod.object({
   "characteristics": zod.array(zod.string())
 }),
   "positioning": zod.string(),
+  "strategicDirection": zod.string(),
   "bigIdea": zod.string(),
   "keyMessage": zod.string(),
   "creativeDirection": zod.object({
@@ -164,11 +219,32 @@ export const SaveCampaignResponse = zod.object({
   "contentIdeas": zod.array(zod.object({
   "format": zod.string(),
   "title": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "whyRelevant": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
 })),
-  "digitalActivation": zod.array(zod.string()),
-  "offlineActivation": zod.array(zod.string()),
-  "influencerStrategy": zod.string(),
+  "digitalActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "offlineActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "creatorStrategy": zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+}),
   "timeline": zod.array(zod.object({
   "phase": zod.string(),
   "timing": zod.string(),
@@ -178,10 +254,16 @@ export const SaveCampaignResponse = zod.object({
   "budgetAllocation": zod.array(zod.object({
   "channel": zod.string(),
   "percentage": zod.number(),
+  "amount": zod.number(),
   "rationale": zod.string()
 })),
-  "kpis": zod.array(zod.string()),
-  "strategicRationale": zod.string()
+  "kpis": zod.array(zod.object({
+  "metric": zod.string(),
+  "why": zod.string(),
+  "signal": zod.string()
+})),
+  "strategicRationale": zod.string(),
+  "qualityCheck": zod.array(zod.string())
 }),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -221,21 +303,34 @@ export const GenerateCampaignBody = zod.object({
   "product": zod.string().min(1),
   "targetAudience": zod.string().min(1),
   "objective": zod.string().min(1),
+  "marketingChallenge": zod.enum(['Low brand awareness', 'Low sales/conversion', 'Strong competition', 'New product launch', 'Low repeat purchase', 'Need more leads', 'Need more foot traffic', 'Weak brand differentiation', 'Entering a new market', 'Other']),
   "location": zod.string().min(1),
   "duration": zod.string().min(1),
   "budgetAmount": zod.number().min(generateCampaignBodyBudgetAmountMin),
   "budgetCurrency": zod.string().min(1),
   "brandPersonality": zod.string().min(1),
-  "challenge": zod.string().min(1),
+  "differentiation": zod.string().min(1),
+  "currentCustomerPerception": zod.string().optional(),
+  "challenge": zod.string().optional(),
+  "competitorsOrAlternatives": zod.string().optional(),
   "additionalInformation": zod.string().optional()
 })
 
 export const GenerateCampaignResponse = zod.object({
+  "diagnosis": zod.object({
+  "businessContext": zod.string(),
+  "userProvidedFacts": zod.array(zod.string()),
+  "marketingProblem": zod.string(),
+  "strategicAssumptions": zod.array(zod.string()),
+  "recommendedApproach": zod.string()
+}),
   "overview": zod.object({
   "campaignName": zod.string(),
   "concept": zod.string(),
   "objective": zod.string()
 }),
+  "marketingProblem": zod.string(),
+  "audienceTension": zod.string(),
   "consumerInsight": zod.string(),
   "targetAudience": zod.object({
   "primary": zod.string(),
@@ -243,6 +338,7 @@ export const GenerateCampaignResponse = zod.object({
   "characteristics": zod.array(zod.string())
 }),
   "positioning": zod.string(),
+  "strategicDirection": zod.string(),
   "bigIdea": zod.string(),
   "keyMessage": zod.string(),
   "creativeDirection": zod.object({
@@ -254,11 +350,32 @@ export const GenerateCampaignResponse = zod.object({
   "contentIdeas": zod.array(zod.object({
   "format": zod.string(),
   "title": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "whyRelevant": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
 })),
-  "digitalActivation": zod.array(zod.string()),
-  "offlineActivation": zod.array(zod.string()),
-  "influencerStrategy": zod.string(),
+  "digitalActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "offlineActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "creatorStrategy": zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+}),
   "timeline": zod.array(zod.object({
   "phase": zod.string(),
   "timing": zod.string(),
@@ -268,10 +385,16 @@ export const GenerateCampaignResponse = zod.object({
   "budgetAllocation": zod.array(zod.object({
   "channel": zod.string(),
   "percentage": zod.number(),
+  "amount": zod.number(),
   "rationale": zod.string()
 })),
-  "kpis": zod.array(zod.string()),
-  "strategicRationale": zod.string()
+  "kpis": zod.array(zod.object({
+  "metric": zod.string(),
+  "why": zod.string(),
+  "signal": zod.string()
+})),
+  "strategicRationale": zod.string(),
+  "qualityCheck": zod.array(zod.string())
 })
 
 
@@ -308,20 +431,33 @@ export const GetCampaignResponse = zod.object({
   "product": zod.string().min(1),
   "targetAudience": zod.string().min(1),
   "objective": zod.string().min(1),
+  "marketingChallenge": zod.enum(['Low brand awareness', 'Low sales/conversion', 'Strong competition', 'New product launch', 'Low repeat purchase', 'Need more leads', 'Need more foot traffic', 'Weak brand differentiation', 'Entering a new market', 'Other']),
   "location": zod.string().min(1),
   "duration": zod.string().min(1),
   "budgetAmount": zod.number().min(getCampaignResponseBriefBudgetAmountMin),
   "budgetCurrency": zod.string().min(1),
   "brandPersonality": zod.string().min(1),
-  "challenge": zod.string().min(1),
+  "differentiation": zod.string().min(1),
+  "currentCustomerPerception": zod.string().optional(),
+  "challenge": zod.string().optional(),
+  "competitorsOrAlternatives": zod.string().optional(),
   "additionalInformation": zod.string().optional()
 }),
   "strategy": zod.object({
+  "diagnosis": zod.object({
+  "businessContext": zod.string(),
+  "userProvidedFacts": zod.array(zod.string()),
+  "marketingProblem": zod.string(),
+  "strategicAssumptions": zod.array(zod.string()),
+  "recommendedApproach": zod.string()
+}),
   "overview": zod.object({
   "campaignName": zod.string(),
   "concept": zod.string(),
   "objective": zod.string()
 }),
+  "marketingProblem": zod.string(),
+  "audienceTension": zod.string(),
   "consumerInsight": zod.string(),
   "targetAudience": zod.object({
   "primary": zod.string(),
@@ -329,6 +465,7 @@ export const GetCampaignResponse = zod.object({
   "characteristics": zod.array(zod.string())
 }),
   "positioning": zod.string(),
+  "strategicDirection": zod.string(),
   "bigIdea": zod.string(),
   "keyMessage": zod.string(),
   "creativeDirection": zod.object({
@@ -340,11 +477,32 @@ export const GetCampaignResponse = zod.object({
   "contentIdeas": zod.array(zod.object({
   "format": zod.string(),
   "title": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "whyRelevant": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
 })),
-  "digitalActivation": zod.array(zod.string()),
-  "offlineActivation": zod.array(zod.string()),
-  "influencerStrategy": zod.string(),
+  "digitalActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "offlineActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "creatorStrategy": zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+}),
   "timeline": zod.array(zod.object({
   "phase": zod.string(),
   "timing": zod.string(),
@@ -354,10 +512,16 @@ export const GetCampaignResponse = zod.object({
   "budgetAllocation": zod.array(zod.object({
   "channel": zod.string(),
   "percentage": zod.number(),
+  "amount": zod.number(),
   "rationale": zod.string()
 })),
-  "kpis": zod.array(zod.string()),
-  "strategicRationale": zod.string()
+  "kpis": zod.array(zod.object({
+  "metric": zod.string(),
+  "why": zod.string(),
+  "signal": zod.string()
+})),
+  "strategicRationale": zod.string(),
+  "qualityCheck": zod.array(zod.string())
 }),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -395,20 +559,33 @@ export const UpdateCampaignBody = zod.object({
   "product": zod.string().min(1),
   "targetAudience": zod.string().min(1),
   "objective": zod.string().min(1),
+  "marketingChallenge": zod.enum(['Low brand awareness', 'Low sales/conversion', 'Strong competition', 'New product launch', 'Low repeat purchase', 'Need more leads', 'Need more foot traffic', 'Weak brand differentiation', 'Entering a new market', 'Other']),
   "location": zod.string().min(1),
   "duration": zod.string().min(1),
   "budgetAmount": zod.number().min(updateCampaignBodyBriefBudgetAmountMin),
   "budgetCurrency": zod.string().min(1),
   "brandPersonality": zod.string().min(1),
-  "challenge": zod.string().min(1),
+  "differentiation": zod.string().min(1),
+  "currentCustomerPerception": zod.string().optional(),
+  "challenge": zod.string().optional(),
+  "competitorsOrAlternatives": zod.string().optional(),
   "additionalInformation": zod.string().optional()
 }).optional(),
   "strategy": zod.object({
+  "diagnosis": zod.object({
+  "businessContext": zod.string(),
+  "userProvidedFacts": zod.array(zod.string()),
+  "marketingProblem": zod.string(),
+  "strategicAssumptions": zod.array(zod.string()),
+  "recommendedApproach": zod.string()
+}),
   "overview": zod.object({
   "campaignName": zod.string(),
   "concept": zod.string(),
   "objective": zod.string()
 }),
+  "marketingProblem": zod.string(),
+  "audienceTension": zod.string(),
   "consumerInsight": zod.string(),
   "targetAudience": zod.object({
   "primary": zod.string(),
@@ -416,6 +593,7 @@ export const UpdateCampaignBody = zod.object({
   "characteristics": zod.array(zod.string())
 }),
   "positioning": zod.string(),
+  "strategicDirection": zod.string(),
   "bigIdea": zod.string(),
   "keyMessage": zod.string(),
   "creativeDirection": zod.object({
@@ -427,11 +605,32 @@ export const UpdateCampaignBody = zod.object({
   "contentIdeas": zod.array(zod.object({
   "format": zod.string(),
   "title": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "whyRelevant": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
 })),
-  "digitalActivation": zod.array(zod.string()),
-  "offlineActivation": zod.array(zod.string()),
-  "influencerStrategy": zod.string(),
+  "digitalActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "offlineActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "creatorStrategy": zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+}),
   "timeline": zod.array(zod.object({
   "phase": zod.string(),
   "timing": zod.string(),
@@ -441,10 +640,16 @@ export const UpdateCampaignBody = zod.object({
   "budgetAllocation": zod.array(zod.object({
   "channel": zod.string(),
   "percentage": zod.number(),
+  "amount": zod.number(),
   "rationale": zod.string()
 })),
-  "kpis": zod.array(zod.string()),
-  "strategicRationale": zod.string()
+  "kpis": zod.array(zod.object({
+  "metric": zod.string(),
+  "why": zod.string(),
+  "signal": zod.string()
+})),
+  "strategicRationale": zod.string(),
+  "qualityCheck": zod.array(zod.string())
 }).optional()
 })
 
@@ -471,20 +676,33 @@ export const UpdateCampaignResponse = zod.object({
   "product": zod.string().min(1),
   "targetAudience": zod.string().min(1),
   "objective": zod.string().min(1),
+  "marketingChallenge": zod.enum(['Low brand awareness', 'Low sales/conversion', 'Strong competition', 'New product launch', 'Low repeat purchase', 'Need more leads', 'Need more foot traffic', 'Weak brand differentiation', 'Entering a new market', 'Other']),
   "location": zod.string().min(1),
   "duration": zod.string().min(1),
   "budgetAmount": zod.number().min(updateCampaignResponseBriefBudgetAmountMin),
   "budgetCurrency": zod.string().min(1),
   "brandPersonality": zod.string().min(1),
-  "challenge": zod.string().min(1),
+  "differentiation": zod.string().min(1),
+  "currentCustomerPerception": zod.string().optional(),
+  "challenge": zod.string().optional(),
+  "competitorsOrAlternatives": zod.string().optional(),
   "additionalInformation": zod.string().optional()
 }),
   "strategy": zod.object({
+  "diagnosis": zod.object({
+  "businessContext": zod.string(),
+  "userProvidedFacts": zod.array(zod.string()),
+  "marketingProblem": zod.string(),
+  "strategicAssumptions": zod.array(zod.string()),
+  "recommendedApproach": zod.string()
+}),
   "overview": zod.object({
   "campaignName": zod.string(),
   "concept": zod.string(),
   "objective": zod.string()
 }),
+  "marketingProblem": zod.string(),
+  "audienceTension": zod.string(),
   "consumerInsight": zod.string(),
   "targetAudience": zod.object({
   "primary": zod.string(),
@@ -492,6 +710,7 @@ export const UpdateCampaignResponse = zod.object({
   "characteristics": zod.array(zod.string())
 }),
   "positioning": zod.string(),
+  "strategicDirection": zod.string(),
   "bigIdea": zod.string(),
   "keyMessage": zod.string(),
   "creativeDirection": zod.object({
@@ -503,11 +722,32 @@ export const UpdateCampaignResponse = zod.object({
   "contentIdeas": zod.array(zod.object({
   "format": zod.string(),
   "title": zod.string(),
-  "description": zod.string()
+  "description": zod.string(),
+  "whyRelevant": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
 })),
-  "digitalActivation": zod.array(zod.string()),
-  "offlineActivation": zod.array(zod.string()),
-  "influencerStrategy": zod.string(),
+  "digitalActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "offlineActivation": zod.array(zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+})),
+  "creatorStrategy": zod.object({
+  "channel": zod.string(),
+  "what": zod.string(),
+  "why": zod.string(),
+  "audience": zod.string(),
+  "strategicLink": zod.string()
+}),
   "timeline": zod.array(zod.object({
   "phase": zod.string(),
   "timing": zod.string(),
@@ -517,10 +757,16 @@ export const UpdateCampaignResponse = zod.object({
   "budgetAllocation": zod.array(zod.object({
   "channel": zod.string(),
   "percentage": zod.number(),
+  "amount": zod.number(),
   "rationale": zod.string()
 })),
-  "kpis": zod.array(zod.string()),
-  "strategicRationale": zod.string()
+  "kpis": zod.array(zod.object({
+  "metric": zod.string(),
+  "why": zod.string(),
+  "signal": zod.string()
+})),
+  "strategicRationale": zod.string(),
+  "qualityCheck": zod.array(zod.string())
 }),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()

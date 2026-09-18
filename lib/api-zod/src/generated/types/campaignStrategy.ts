@@ -5,27 +5,35 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ActivationRecommendation } from './activationRecommendation';
 import type { AudienceProfile } from './audienceProfile';
 import type { BudgetAllocation } from './budgetAllocation';
 import type { CampaignOverview } from './campaignOverview';
 import type { ContentIdea } from './contentIdea';
 import type { CreativeDirection } from './creativeDirection';
+import type { Diagnosis } from './diagnosis';
+import type { Kpi } from './kpi';
 import type { TimelinePhase } from './timelinePhase';
 
 export interface CampaignStrategy {
+  diagnosis: Diagnosis;
   overview: CampaignOverview;
+  marketingProblem: string;
+  audienceTension: string;
   consumerInsight: string;
   targetAudience: AudienceProfile;
   positioning: string;
+  strategicDirection: string;
   bigIdea: string;
   keyMessage: string;
   creativeDirection: CreativeDirection;
   contentIdeas: ContentIdea[];
-  digitalActivation: string[];
-  offlineActivation: string[];
-  influencerStrategy: string;
+  digitalActivation: ActivationRecommendation[];
+  offlineActivation: ActivationRecommendation[];
+  creatorStrategy: ActivationRecommendation;
   timeline: TimelinePhase[];
   budgetAllocation: BudgetAllocation[];
-  kpis: string[];
+  kpis: Kpi[];
   strategicRationale: string;
+  qualityCheck: string[];
 }
