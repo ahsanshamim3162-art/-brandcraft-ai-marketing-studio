@@ -25,6 +25,7 @@ import {
   WandSparkles,
   X,
 } from "lucide-react";
+
 import {
   getGetCampaignQueryKey,
   getGetCampaignSummaryQueryKey,
@@ -36,15 +37,30 @@ import {
   useListCampaigns,
   useSaveCampaign,
   useUpdateCampaign,
+  type ActivationRecommendation,
   type AudienceProfile,
   type Campaign,
   type CampaignBrief,
   type CampaignStrategy,
   type ContentIdea,
+  type Kpi,
   type TimelinePhase,
 } from "@workspace/api-client-react";
-import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
-import { Link, Route, Switch, useLocation, Router as WouterRouter } from "wouter";
+
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import {
+  Link,
+  Route,
+  Switch,
+  useLocation,
+  Router as WouterRouter,
+} from "wouter";
+
 import { ErrorBoundary } from "@/components/error-boundary";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -55,7 +71,7 @@ const emptyBrief: CampaignBrief = {
   product: "",
   targetAudience: "",
   objective: "",
-  marketingChallenge: "",
+  marketingChallenge: "Other",
   location: "",
   duration: "",
   budgetAmount: 0,
@@ -91,19 +107,6 @@ const objectives = [
   "Other",
 ];
 
-const marketingChallenges = [
-  "Low brand awareness",
-  "Low sales / conversion",
-  "Strong competition",
-  "New product launch",
-  "Low repeat purchase",
-  "Need more leads",
-  "Need more foot traffic",
-  "Weak brand differentiation",
-  "Entering a new market",
-  "Other",
-];
-
 const personalities = [
   "Premium",
   "Friendly",
@@ -113,6 +116,19 @@ const personalities = [
   "Emotional",
   "Playful",
   "Minimal",
+  "Other",
+];
+
+const marketingChallenges = [
+  "Low brand awareness",
+  "Low sales/conversion",
+  "Strong competition",
+  "New product launch",
+  "Low repeat purchase",
+  "Need more leads",
+  "Need more foot traffic",
+  "Weak brand differentiation",
+  "Entering a new market",
   "Other",
 ];
 
@@ -127,19 +143,35 @@ function formatDate(value: string | Date): string {
 function getErrorMessage(error: unknown, fallback: string): string {
   if (error && typeof error === "object" && "data" in error) {
     const data = (error as { data?: { error?: string } }).data;
-    if (data?.error) return data.error;
+
+    if (data?.error) {
+      return data.error;
+    }
   }
+
   return fallback;
 }
 
 function AppShell({ children }: { children: ReactNode }) {
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [
-    { href: "/", label: "Overview", icon: LayoutDashboard },
-    { href: "/campaign-generator", label: "Campaign Generator", icon: WandSparkles },
-    { href: "/campaigns", label: "Campaign Library", icon: BriefcaseBusiness },
+    {
+      href: "/",
+      label: "Overview",
+      icon: LayoutDashboard,
+    },
+    {
+      href: "/campaign-generator",
+      label: "Campaign Generator",
+      icon: WandSparkles,
+    },
+    {
+      href: "/campaigns",
+      label: "Campaign Library",
+      icon: BriefcaseBusiness,
+    },
   ];
 
   return (
@@ -151,10 +183,12 @@ function AppShell({ children }: { children: ReactNode }) {
             <span />
             <span />
           </div>
+
           <div>
             <div className="brand-name">BrandCraft</div>
             <div className="brand-caption">Strategy workspace</div>
           </div>
+
           <button
             className="icon-button sidebar-close"
             onClick={() => setMobileOpen(false)}
@@ -167,22 +201,29 @@ function AppShell({ children }: { children: ReactNode }) {
 
         <div className="workspace-switcher">
           <div className="workspace-avatar">BC</div>
+
           <div className="workspace-copy">
             <span className="eyebrow">Workspace</span>
             <strong>BrandCraft Studio</strong>
           </div>
+
           <ChevronRight size={16} />
         </div>
 
         <nav className="primary-nav" aria-label="Primary navigation">
           <span className="nav-label">Workspace</span>
+
           {links.map(({ href, label, icon: Icon }) => (
             <Link
               href={href}
               key={href}
-              className={`nav-link ${location === href ? "nav-link-active" : ""}`}
+              className={`nav-link ${
+                location === href ? "nav-link-active" : ""
+              }`}
               onClick={() => setMobileOpen(false)}
-              data-testid={`link-${label.toLowerCase().replaceAll(" ", "-")}`}
+              data-testid={`link-${label
+                .toLowerCase()
+                .replaceAll(" ", "-")}`}
             >
               <Icon size={17} />
               <span>{label}</span>
@@ -195,17 +236,21 @@ function AppShell({ children }: { children: ReactNode }) {
             <div className="prompt-icon">
               <Sparkles size={16} />
             </div>
+
             <div>
               <strong>Turn a brief into a plan</strong>
               <p>Build a campaign strategy in minutes.</p>
             </div>
           </div>
+
           <div className="profile-row">
             <div className="profile-avatar">AS</div>
+
             <div className="profile-copy">
               <strong>Ahsan Shamim</strong>
               <span>Strategy lead</span>
             </div>
+
             <MoreHorizontal size={16} />
           </div>
         </div>
@@ -234,6 +279,7 @@ function AppShell({ children }: { children: ReactNode }) {
           <div className="topbar-context">
             <span>BrandCraft Studio</span>
             <ChevronRight size={14} />
+
             <span className="topbar-current">
               {location === "/"
                 ? "Overview"
@@ -270,7 +316,9 @@ function Home() {
       <div className="page-heading heading-with-action">
         <div>
           <span className="kicker">Workspace overview</span>
+
           <h1>Make the next move clearer.</h1>
+
           <p>
             Turn the raw thinking behind your marketing into a plan your team
             can act on.
@@ -291,34 +339,43 @@ function Home() {
       <section className="hero-panel">
         <div className="hero-copy">
           <div className="hero-badge">
-            <Sparkles size={14} /> Strategy, without the blank page
+            <Sparkles size={14} />
+            Strategy, without the blank page
           </div>
+
           <h2>A sharper brief is the start of better work.</h2>
+
           <p>
             BrandCraft gives your team a structured route from what you know
             about the business to a campaign worth putting into market.
           </p>
+
           <Link
             href="/campaign-generator"
             className="text-link"
             data-testid="link-hero-generator"
           >
-            Start with a brief <ArrowUpRight size={15} />
+            Start with a brief
+            <ArrowUpRight size={15} />
           </Link>
         </div>
 
         <div className="hero-orbit" aria-hidden="true">
           <div className="orbit-ring orbit-ring-one" />
           <div className="orbit-ring orbit-ring-two" />
+
           <div className="orbit-center">
             <Lightbulb size={26} />
           </div>
+
           <span className="orbit-node orbit-node-one">
             <Target size={16} />
           </span>
+
           <span className="orbit-node orbit-node-two">
             <Users size={16} />
           </span>
+
           <span className="orbit-node orbit-node-three">
             <BarChart3 size={16} />
           </span>
@@ -330,12 +387,14 @@ function Home() {
           <div className="stat-icon stat-icon-purple">
             <BriefcaseBusiness size={18} />
           </div>
+
           <div>
             <span className="stat-label">Saved campaigns</span>
             <strong data-testid="text-total-campaigns">
               {summary?.totalCampaigns ?? 0}
             </strong>
           </div>
+
           <span className="stat-note">All time</span>
         </div>
 
@@ -343,12 +402,14 @@ function Home() {
           <div className="stat-icon stat-icon-mint">
             <BarChart3 size={18} />
           </div>
+
           <div>
             <span className="stat-label">Created this month</span>
             <strong data-testid="text-month-campaigns">
               {summary?.thisMonth ?? 0}
             </strong>
           </div>
+
           <span className="stat-note">Current month</span>
         </div>
 
@@ -356,18 +417,21 @@ function Home() {
           <div className="stat-icon stat-icon-orange">
             <Sparkles size={18} />
           </div>
+
           <div>
             <span className="stat-label">Latest strategy</span>
             <strong data-testid="text-latest-campaign">
               {summary?.latestCampaign ?? "No campaign yet"}
             </strong>
           </div>
+
           <Link
             href="/campaigns"
             className="stat-link"
             data-testid="link-view-library"
           >
-            View library <ArrowUpRight size={14} />
+            View library
+            <ArrowUpRight size={14} />
           </Link>
         </div>
       </section>
@@ -384,7 +448,8 @@ function Home() {
             className="subtle-link"
             data-testid="link-see-all-campaigns"
           >
-            See all <ArrowUpRight size={14} />
+            See all
+            <ArrowUpRight size={14} />
           </Link>
         </div>
 
@@ -444,6 +509,7 @@ function Field({
           data-testid={`select-${name}`}
         >
           <option value="">Select {label.toLowerCase()}</option>
+
           {options.map((option) => (
             <option value={option} key={option}>
               {option}
@@ -461,7 +527,10 @@ function Field({
       )}
 
       {hint && <span className="field-hint">{hint}</span>}
-      {error && <span className="field-error-message">{error}</span>}
+
+      {error && (
+        <span className="field-error-message">{error}</span>
+      )}
     </label>
   );
 }
@@ -501,7 +570,9 @@ function TextAreaField({
         data-testid={`textarea-${name}`}
       />
 
-      {error && <span className="field-error-message">{error}</span>}
+      {error && (
+        <span className="field-error-message">{error}</span>
+      )}
     </label>
   );
 }
@@ -513,14 +584,18 @@ function GeneratorPage() {
 
   const [brief, setBrief] = useState<CampaignBrief>(emptyBrief);
   const [strategy, setStrategy] = useState<CampaignStrategy | null>(null);
+
   const [errors, setErrors] = useState<
     Partial<Record<keyof CampaignBrief, string>>
   >({});
+
   const [stage, setStage] = useState(0);
+
   const [notice, setNotice] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
+
   const [savedId, setSavedId] = useState<string | null>(editId);
   const [showForm, setShowForm] = useState(true);
   const [copyState, setCopyState] = useState(false);
@@ -564,13 +639,11 @@ function GeneratorPage() {
 
     setStage(0);
 
-    const timer = window.setInterval(
-      () =>
-        setStage((current) =>
-          Math.min(current + 1, stages.length - 1),
-        ),
-      700,
-    );
+    const timer = window.setInterval(() => {
+      setStage((current) =>
+        Math.min(current + 1, stages.length - 1),
+      );
+    }, 700);
 
     return () => window.clearInterval(timer);
   }, [generate.isPending, stages.length]);
@@ -617,8 +690,8 @@ function GeneratorPage() {
       }
     }
 
-    if (brief.budgetAmount < 0) {
-      nextErrors.budgetAmount = "Enter a valid budget amount.";
+    if (!brief.budgetAmount || brief.budgetAmount < 0) {
+      nextErrors.budgetAmount = "Enter a budget amount.";
     }
 
     if (!brief.budgetCurrency.trim()) {
@@ -636,36 +709,44 @@ function GeneratorPage() {
         type: "error",
         text: "Complete the highlighted fields to generate your strategy.",
       });
+
       return;
     }
 
     setNotice(null);
 
     generate.mutate(
-      { data: brief },
+      {
+        data: brief,
+      },
       {
         onSuccess: (result) => {
           setStrategy(result);
           setShowForm(false);
+
           setNotice({
             type: "success",
             text: "Your campaign strategy is ready to review.",
           });
         },
-        onError: (error) =>
+
+        onError: (error) => {
           setNotice({
             type: "error",
             text: getErrorMessage(
               error,
               "We couldn't generate the strategy. Please try again.",
             ),
-          }),
+          });
+        },
       },
     );
   };
 
   const saveCampaign = () => {
-    if (!strategy) return;
+    if (!strategy) {
+      return;
+    }
 
     setNotice(null);
 
@@ -692,18 +773,22 @@ function GeneratorPage() {
       update.mutate(
         {
           id: savedId,
-          data: { brief, strategy },
+          data: {
+            brief,
+            strategy,
+          },
         },
         {
           onSuccess,
-          onError: (error) =>
+          onError: (error) => {
             setNotice({
               type: "error",
               text: getErrorMessage(
                 error,
                 "We couldn't update this campaign.",
               ),
-            }),
+            });
+          },
         },
       );
     } else {
@@ -716,21 +801,24 @@ function GeneratorPage() {
         },
         {
           onSuccess,
-          onError: (error) =>
+          onError: (error) => {
             setNotice({
               type: "error",
               text: getErrorMessage(
                 error,
                 "We couldn't save this campaign.",
               ),
-            }),
+            });
+          },
         },
       );
     }
   };
 
   const copyCampaign = async () => {
-    if (!strategy) return;
+    if (!strategy) {
+      return;
+    }
 
     const text = `${strategy.overview.campaignName}
 
@@ -747,9 +835,12 @@ ${strategy.strategicRationale}`;
 
     try {
       await navigator.clipboard.writeText(text);
+
       setCopyState(true);
 
-      window.setTimeout(() => setCopyState(false), 1800);
+      window.setTimeout(() => {
+        setCopyState(false);
+      }, 1800);
     } catch {
       setNotice({
         type: "error",
@@ -770,7 +861,9 @@ ${strategy.strategicRationale}`;
     <div className="page page-generator">
       <div className="page-heading">
         <span className="kicker">Campaign Generator</span>
+
         <h1>Turn your brief into a campaign strategy.</h1>
+
         <p>
           Give BrandCraft the context behind the business. Get a clear,
           structured route to market.
@@ -790,6 +883,7 @@ ${strategy.strategicRationale}`;
               <X size={16} />
             )}
           </span>
+
           {notice.text}
         </div>
       )}
@@ -982,7 +1076,7 @@ ${strategy.strategicRationale}`;
                 error={errors.brandPersonality}
               />
 
-              <Field
+              <TextAreaField
                 label="What makes the brand different?"
                 name="differentiation"
                 value={brief.differentiation}
@@ -996,7 +1090,7 @@ ${strategy.strategicRationale}`;
               <TextAreaField
                 label="Key problem / challenge"
                 name="challenge"
-                value={brief.challenge}
+                value={brief.challenge ?? ""}
                 onChange={(value) =>
                   updateBrief("challenge", value)
                 }
@@ -1009,7 +1103,10 @@ ${strategy.strategicRationale}`;
                 name="additionalInformation"
                 value={brief.additionalInformation ?? ""}
                 onChange={(value) =>
-                  updateBrief("additionalInformation", value)
+                  updateBrief(
+                    "additionalInformation",
+                    value,
+                  )
                 }
                 required={false}
                 placeholder="Anything else the strategy should know? (optional)"
@@ -1030,7 +1127,10 @@ ${strategy.strategicRationale}`;
               >
                 {generate.isPending ? (
                   <>
-                    <LoaderCircle size={17} className="spin" />
+                    <LoaderCircle
+                      size={17}
+                      className="spin"
+                    />
                     Building strategy...
                   </>
                 ) : (
@@ -1071,7 +1171,9 @@ ${strategy.strategicRationale}`;
           onRegenerate={generateCampaign}
           onCopy={copyCampaign}
           onSave={saveCampaign}
-          onBackToLibrary={() => setLocation("/campaigns")}
+          onBackToLibrary={() =>
+            setLocation("/campaigns")
+          }
         />
       )}
     </div>
@@ -1100,8 +1202,8 @@ function GenerationProgress({
         <h2>{stages[stage]}</h2>
 
         <p>
-          Building a strategy around your audience, objective, and
-          market context.
+          Building a strategy around your audience, objective,
+          and market context.
         </p>
 
         <div className="stage-list">
@@ -1117,7 +1219,10 @@ function GenerationProgress({
               {index < stage ? (
                 <Check size={14} />
               ) : index === stage ? (
-                <LoaderCircle size={14} className="spin" />
+                <LoaderCircle
+                  size={14}
+                  className="spin"
+                />
               ) : (
                 <span className="stage-dot" />
               )}
@@ -1159,11 +1264,14 @@ function StrategyView({
       <div className="strategy-topbar">
         <div>
           <span className="kicker">Campaign strategy</span>
+
           <h2 data-testid="text-campaign-name">
             {strategy.overview.campaignName}
           </h2>
+
           <p>
-            {brief.brandName} · {brief.industry} · {brief.location}
+            {brief.brandName} · {brief.industry} ·{" "}
+            {brief.location}
           </p>
         </div>
 
@@ -1196,6 +1304,7 @@ function StrategyView({
             ) : (
               <Copy size={15} />
             )}
+
             {copyState ? "Copied" : "Copy campaign"}
           </button>
 
@@ -1206,12 +1315,16 @@ function StrategyView({
             data-testid="button-save-campaign"
           >
             {isSaving ? (
-              <LoaderCircle size={15} className="spin" />
+              <LoaderCircle
+                size={15}
+                className="spin"
+              />
             ) : savedId ? (
               <Check size={15} />
             ) : (
               <Bookmark size={15} />
             )}
+
             {savedId ? "Update campaign" : "Save campaign"}
           </button>
         </div>
@@ -1242,9 +1355,41 @@ function StrategyView({
           className="strategy-card-featured"
         >
           <h3>{strategy.overview.concept}</h3>
+
           <p className="large-copy">
             {strategy.strategicRationale}
           </p>
+        </StrategyCard>
+
+        <StrategyCard
+          title="Marketing diagnosis"
+          icon={<Target size={17} />}
+        >
+          <div className="creative-list">
+            <div>
+              <span className="mini-label">
+                Marketing problem
+              </span>
+
+              <p>{strategy.marketingProblem}</p>
+            </div>
+
+            <div>
+              <span className="mini-label">
+                Audience tension
+              </span>
+
+              <p>{strategy.audienceTension}</p>
+            </div>
+
+            <div>
+              <span className="mini-label">
+                Strategic direction
+              </span>
+
+              <p>{strategy.strategicDirection}</p>
+            </div>
+          </div>
         </StrategyCard>
 
         <StrategyCard
@@ -1266,7 +1411,10 @@ function StrategyView({
           icon={<Sparkles size={17} />}
           className="strategy-card-idea"
         >
-          <span className="idea-label">The central thought</span>
+          <span className="idea-label">
+            The central thought
+          </span>
+
           <h3>{strategy.bigIdea}</h3>
 
           <div className="message-block">
@@ -1287,24 +1435,21 @@ function StrategyView({
           ideas={strategy.contentIdeas}
         />
 
-        <ListCard
+        <ActivationCard
           title="Digital activation"
           icon={<Send size={17} />}
           items={strategy.digitalActivation}
         />
 
-        <ListCard
+        <ActivationCard
           title="Offline activation"
           icon={<BriefcaseBusiness size={17} />}
           items={strategy.offlineActivation}
         />
 
-        <StrategyCard
-          title="Influencer / creator strategy"
-          icon={<Users size={17} />}
-        >
-          <p>{strategy.influencerStrategy}</p>
-        </StrategyCard>
+        <CreatorStrategyCard
+          strategy={strategy.creatorStrategy}
+        />
 
         <TimelineCard
           phases={strategy.timeline}
@@ -1315,11 +1460,23 @@ function StrategyView({
           allocations={strategy.budgetAllocation}
         />
 
-        <ListCard
-          title="KPIs to watch"
-          icon={<BarChart3 size={17} />}
+        <KpiCard
           items={strategy.kpis}
         />
+
+        <StrategyCard
+          title="Quality check"
+          icon={<Check size={17} />}
+        >
+          <ul className="strategy-list">
+            {strategy.qualityCheck.map((item) => (
+              <li key={item}>
+                <Check size={15} />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </StrategyCard>
       </div>
 
       <div className="strategy-footer">
@@ -1354,11 +1511,17 @@ function StrategyCard({
   className?: string;
 }) {
   return (
-    <section className={`strategy-card ${className}`}>
+    <section
+      className={`strategy-card ${className}`}
+    >
       <div className="card-title">
-        <span className="card-icon">{icon}</span>
+        <span className="card-icon">
+          {icon}
+        </span>
+
         <h3>{title}</h3>
       </div>
+
       {children}
     </section>
   );
@@ -1412,16 +1575,23 @@ function CreativeCard({
           <span className="mini-label">
             Visual direction
           </span>
+
           <p>{direction.visualDirection}</p>
         </div>
 
         <div>
-          <span className="mini-label">Tone</span>
+          <span className="mini-label">
+            Tone
+          </span>
+
           <p>{direction.tone}</p>
         </div>
 
         <div>
-          <span className="mini-label">Storytelling</span>
+          <span className="mini-label">
+            Storytelling
+          </span>
+
           <p>{direction.storytelling}</p>
         </div>
 
@@ -1429,6 +1599,7 @@ function CreativeCard({
           <span className="mini-label">
             Suggested style
           </span>
+
           <p>{direction.suggestedStyle}</p>
         </div>
       </div>
@@ -1453,7 +1624,7 @@ function ContentCard({
             key={idea.title}
           >
             <span className="content-number">
-              0{index + 1}
+              {String(index + 1).padStart(2, "0")}
             </span>
 
             <div>
@@ -1464,6 +1635,12 @@ function ContentCard({
               <strong>{idea.title}</strong>
 
               <p>{idea.description}</p>
+
+              <span className="mini-label">
+                Why relevant
+              </span>
+
+              <p>{idea.whyRelevant}</p>
             </div>
           </div>
         ))}
@@ -1472,25 +1649,109 @@ function ContentCard({
   );
 }
 
-function ListCard({
+function ActivationCard({
   title,
   icon,
   items,
 }: {
   title: string;
   icon: ReactNode;
-  items: string[];
+  items: ActivationRecommendation[];
 }) {
   return (
-    <StrategyCard title={title} icon={icon}>
-      <ul className="strategy-list">
-        {items.map((item) => (
-          <li key={item}>
-            <Check size={15} />
-            <span>{item}</span>
-          </li>
+    <StrategyCard
+      title={title}
+      icon={icon}
+    >
+      <div className="content-ideas">
+        {items.map((item, index) => (
+          <div
+            className="content-idea"
+            key={`${item.channel}-${index}`}
+          >
+            <span className="content-number">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+
+            <div>
+              <span className="mini-label">
+                {item.channel}
+              </span>
+
+              <strong>{item.what}</strong>
+
+              <p>{item.why}</p>
+
+              <span className="mini-label">
+                Audience
+              </span>
+
+              <p>{item.audience}</p>
+
+              <span className="mini-label">
+                Strategic link
+              </span>
+
+              <p>{item.strategicLink}</p>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
+    </StrategyCard>
+  );
+}
+
+function CreatorStrategyCard({
+  strategy,
+}: {
+  strategy: ActivationRecommendation;
+}) {
+  return (
+    <StrategyCard
+      title="Creator strategy"
+      icon={<Users size={17} />}
+    >
+      <div className="creative-list">
+        <div>
+          <span className="mini-label">
+            Channel
+          </span>
+
+          <p>{strategy.channel}</p>
+        </div>
+
+        <div>
+          <span className="mini-label">
+            What creators should do
+          </span>
+
+          <p>{strategy.what}</p>
+        </div>
+
+        <div>
+          <span className="mini-label">
+            Why it matters
+          </span>
+
+          <p>{strategy.why}</p>
+        </div>
+
+        <div>
+          <span className="mini-label">
+            Audience
+          </span>
+
+          <p>{strategy.audience}</p>
+        </div>
+
+        <div>
+          <span className="mini-label">
+            Strategic link
+          </span>
+
+          <p>{strategy.strategicLink}</p>
+        </div>
+      </div>
     </StrategyCard>
   );
 }
@@ -1526,7 +1787,9 @@ function TimelineCard({
 
               <ul>
                 {phase.actions.map((action) => (
-                  <li key={action}>{action}</li>
+                  <li key={action}>
+                    {action}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -1583,6 +1846,48 @@ function BudgetCard({
   );
 }
 
+function KpiCard({
+  items,
+}: {
+  items: Kpi[];
+}) {
+  return (
+    <StrategyCard
+      title="KPIs to watch"
+      icon={<BarChart3 size={17} />}
+    >
+      <div className="content-ideas">
+        {items.map((item, index) => (
+          <div
+            className="content-idea"
+            key={`${item.metric}-${index}`}
+          >
+            <span className="content-number">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+
+            <div>
+              <strong>{item.metric}</strong>
+
+              <span className="mini-label">
+                Why it matters
+              </span>
+
+              <p>{item.why}</p>
+
+              <span className="mini-label">
+                Signal
+              </span>
+
+              <p>{item.signal}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </StrategyCard>
+  );
+}
+
 function CampaignCard({
   campaign,
   onDelete,
@@ -1623,6 +1928,7 @@ function CampaignCard({
         data-testid={`link-open-campaign-${campaign.id}`}
       >
         <h3>{campaign.name}</h3>
+
         <p>{campaign.brandName}</p>
 
         <div className="campaign-card-meta">
@@ -1673,11 +1979,11 @@ function LibraryPage() {
 
   const remove = useDeleteCampaign();
 
-  const [notice, setNotice] = useState<
-    string | null
-  >(null);
+  const [notice, setNotice] =
+    useState<string | null>(null);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] =
+    useState("");
 
   const filtered = useMemo(
     () =>
@@ -1708,7 +2014,8 @@ function LibraryPage() {
           });
 
           queryClient.invalidateQueries({
-            queryKey: getGetCampaignSummaryQueryKey(),
+            queryKey:
+              getGetCampaignSummaryQueryKey(),
           });
 
           setNotice(
@@ -1731,11 +2038,15 @@ function LibraryPage() {
     <div className="page page-library">
       <div className="page-heading heading-with-action">
         <div>
-          <span className="kicker">Campaign Library</span>
+          <span className="kicker">
+            Campaign Library
+          </span>
+
           <h1>Your thinking, kept in motion.</h1>
+
           <p>
-            Reopen a strategy, refine the brief, or start
-            the next campaign.
+            Reopen a strategy, refine the brief, or
+            start the next campaign.
           </p>
         </div>
 
@@ -1790,9 +2101,12 @@ function LibraryPage() {
       ) : isError ? (
         <div className="error-state">
           <X size={22} />
+
           <h2>We couldn't load your library</h2>
+
           <p>
-            Refresh the page or try again in a moment.
+            Refresh the page or try again in a
+            moment.
           </p>
         </div>
       ) : filtered.length ? (
@@ -1814,7 +2128,8 @@ function LibraryPage() {
           <h2>No campaigns match that search.</h2>
 
           <p>
-            Try a different brand, industry, or objective.
+            Try a different brand, industry, or
+            objective.
           </p>
 
           <button
@@ -1862,10 +2177,12 @@ function CampaignDetailPage() {
       <div className="page centered-state">
         <div className="error-state">
           <X size={22} />
+
           <h2>Campaign not found</h2>
+
           <p>
-            This campaign may have been deleted or is no
-            longer available.
+            This campaign may have been deleted or
+            is no longer available.
           </p>
 
           <Link
@@ -1885,7 +2202,9 @@ function CampaignDetailPage() {
     <div className="page page-detail">
       <button
         className="back-link"
-        onClick={() => setLocation("/campaigns")}
+        onClick={() =>
+          setLocation("/campaigns")
+        }
         data-testid="button-detail-back"
       >
         <ArrowLeft size={15} />
@@ -1974,8 +2293,8 @@ function EmptyState({
       <h2>No campaigns yet.</h2>
 
       <p>
-        Create your first campaign with BrandCraft and give
-        your next idea a clear direction.
+        Create your first campaign with BrandCraft
+        and give your next idea a clear direction.
       </p>
 
       <Link
@@ -2000,7 +2319,11 @@ function LoadingRow({
       className="loading-state"
       data-testid="status-loading"
     >
-      <LoaderCircle size={20} className="spin" />
+      <LoaderCircle
+        size={20}
+        className="spin"
+      />
+
       <span>{label}...</span>
     </div>
   );
@@ -2011,7 +2334,10 @@ function NotFound() {
     <div className="page centered-state">
       <div className="error-state">
         <h2>Page not found</h2>
-        <p>That BrandCraft page doesn't exist.</p>
+
+        <p>
+          That BrandCraft page doesn't exist.
+        </p>
 
         <Link
           href="/"
@@ -2028,16 +2354,26 @@ function NotFound() {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route
+        path="/"
+        component={Home}
+      />
+
       <Route
         path="/campaign-generator"
         component={GeneratorPage}
       />
-      <Route path="/campaigns" component={LibraryPage} />
+
+      <Route
+        path="/campaigns"
+        component={LibraryPage}
+      />
+
       <Route
         path="/campaigns/:id"
         component={CampaignDetailPage}
       />
+
       <Route component={NotFound} />
     </Switch>
   );
