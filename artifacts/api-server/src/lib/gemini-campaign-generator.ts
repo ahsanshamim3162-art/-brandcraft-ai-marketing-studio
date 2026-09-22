@@ -10,7 +10,7 @@ function briefAsText(brief: CampaignBrief): string {
     .join("\n");
 }
 
-function stripMarkdown fences(value: string): string {
+function stripMarkdownFences(value: string): string {
   return value.replace(/^\s*```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
 }
 
@@ -44,7 +44,7 @@ export async function generateCampaignWithGemini(brief: CampaignBrief): Promise<
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured on the API server.");
 
   const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
-  const prompt = `You are BrandCraft's senior marketing strategy engine. Produce a client-ready campaign strategy, not a chatbot response.\n\nUse only the submitted brief below as factual source material. Do not invent research, statistics, market shares, competitor claims, product features, or customer findings. Where evidence is missing, label it as a working assumption or validation task. Every recommendation must connect to the business objective, audience, stated challenge, product, differentiation, budget, duration, and big idea. Avoid generic advice such as simply running ads. Do not mention Gemini, AI, prompts, APIs, or implementation.\n\nReturn ONLY valid JSON matching this exact shape. All string fields must be substantive and specific to the brief. Budget percentages must total 100 and amounts must total the submitted budget.\n\nJSON shape:\n${responseShape}\n\nSubmitted campaign brief:\n${briefAsText(brief)}`;
+  const prompt = `You are BrandCraft's senior marketing strategy engine. Produce a client-ready campaign strategy, not a chatbot response.\n\nUse only the submitted brief below as factual source material. Do not invent statistics, research findings, competitor facts, customer numbers, product features, or campaign results. When information is missing, label the point as a strategic hypothesis or recommendation. Connect the business situation to the marketing problem, target audience, audience tension, consumer insight, positioning, campaign idea, key message, creative direction, content ideas, channel activation, and KPIs. Return only valid JSON matching this exact shape:\n${responseShape}\n\nSubmitted brief:\n${briefAsText(brief)}`;
 
   let response: Response;
   try {
@@ -74,7 +74,7 @@ export async function generateCampaignWithGemini(brief: CampaignBrief): Promise<
 
   let candidate: unknown;
   try {
-    candidate = JSON.parse(stripMarkdown fences(textFromGeminiResponse(payload)));
+    candidate = JSON.parse(stripMarkdownFences(textFromGeminiResponse(payload)));
   } catch {
     throw new Error("Gemini did not return valid JSON for the campaign strategy.");
   }
