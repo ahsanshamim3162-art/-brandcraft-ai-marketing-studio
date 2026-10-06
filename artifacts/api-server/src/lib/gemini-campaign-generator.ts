@@ -44,7 +44,14 @@ export async function generateCampaignWithGemini(brief: CampaignBrief): Promise<
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured on the API server.");
 
   const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
-  const prompt = `You are BrandCraft's senior marketing strategy engine. Produce a client-ready campaign strategy, not a chatbot response.\n\nUse only the submitted brief below as factual source material. Do not invent statistics, research findings, competitor facts, customer numbers, product features, or campaign results. When information is missing, label the point as a strategic hypothesis or recommendation. Connect the business situation to the marketing problem, target audience, audience tension, consumer insight, positioning, campaign idea, key message, creative direction, content ideas, channel activation, and KPIs. Return only valid JSON matching this exact shape:\n${responseShape}\n\nSubmitted brief:\n${briefAsText(brief)}`;
+  const webResearchEnabled =
+    process.env.GEMINI_WEB_RESEARCH_ENABLED?.trim().toLowerCase() === "true";
+
+  const prompt = `You are BrandCraft's senior marketing strategy engine. Produce a client-ready campaign strategy, not a chatbot response.\n\nUse only the submitted brief below as factual source material. Do not invent statistics, research findings, competitor facts, customer numbers, product features, or campaign results. When information is missing, label the point as a strategic hypothesis or recommendation.${
+    webResearchEnabled
+      ? "\n\nWhen generating this strategy, you may use Google Search to research current competitor positioning, market conditions, category trends, and consumer behavior. If you use search results, clearly distinguish researched facts from user-provided facts and from strategic hypotheses. Never invent or hallucinate statistics, customer numbers, or campaign performance claims—cite sources or label as unverified."
+      : ""
+  }\n\nConnect the business situation to the marketing problem, target audience, audience tension, consumer insight, positioning, campaign idea, key message, creative direction, content ideas, channel activation, and KPIs. Return only valid JSON matching this exact shape:\n${responseShape}\n\nSubmitted brief:\n${briefAsText(brief)}`;
 
   let response: Response;
   try {
@@ -53,6 +60,7 @@ export async function generateCampaignWithGemini(brief: CampaignBrief): Promise<
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
+        ...(webResearchEnabled ? { tools: [{ google_search: {} }] } : {}),
         generationConfig: { temperature: 0.65, responseMimeType: "application/json" },
       }),
     });
